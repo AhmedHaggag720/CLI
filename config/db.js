@@ -9,7 +9,7 @@ const pool = new Pool({
     port: 5432, // Default PostgreSQL port
 });
 
-// Run connection test
+//Run connection test
 
 const testConnection = async () => {
     try {

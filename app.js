@@ -13,10 +13,10 @@ app.use(express.json()); // ✅ Add this line to parse JSON requests
 
 // Import Routes
 const userRoutes = require("./routes/userRoutes");
-const taskRoutes = require("./routes/taskRoutes");
+//const taskRoutes = require("./routes/taskRoutes");
 
 app.use("/user/", userRoutes); // ✅ Better route structure
-app.use("/task/", taskRoutes); // ✅ Better route structure
+//app.use("/task/", taskRoutes); // ✅ Better route structure
   
 // // Start Server
 const PORT = process.env.PORT || 3000; // Default to port 5000

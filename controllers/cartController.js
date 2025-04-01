@@ -27,12 +27,12 @@ async function createCart(req, res) {
   try {
     const userId = req.user.id;
 
-    const cart = await Cart.getCartByUserId(userId);
+    const existingCart  = await Cart.getCartByUserId(userId);
 
-    if (cart) {
+    if (existingCart) {
       return res
-        .status(404)
-        .json({ success: false, message: "User already got cart" });
+        .status(400)
+        .json({ success: false, message: "User already has an existing cart" });
     }
     const cartId = await Cart.createCart(userId);
     return res.status(201).json({ success: true, cartId });

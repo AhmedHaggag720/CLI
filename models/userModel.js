@@ -1,9 +1,9 @@
 const pool = require("../config/db");
 
 const User = {
-  async registerUser(name, email, password) {
+  async addUser(name, email, password) {
     const query = `
-            INSERT INTO users (name, email, password_hash) 
+            INSERT INTO users (name, email, password) 
             VALUES ($1, $2, $3) 
             RETURNING *;
         `;
@@ -17,7 +17,7 @@ const User = {
     }
   },
 
-  async findUserByEmail(email) {
+  async getUserByEmail(email) {
     const query = `SELECT * FROM users WHERE email = $1;`;
     const values = [email];
 
@@ -30,7 +30,7 @@ const User = {
     }
   },
 
-  async findUserById(id) {
+  async getUserById(id) {
     const query = `SELECT * FROM users WHERE id = $1;`;
     const values = [id];
 
@@ -44,7 +44,7 @@ const User = {
   },
 
   async updatePassword(id, newPassword) {
-    const query = "UPDATE users SET password_hash =$1 WHERE id =$2 RETURNING id, name, email;";
+    const query = "UPDATE users SET password =$1 WHERE id =$2 RETURNING id, name, email;";
     const values = [newPassword, id];
 
     try {
@@ -56,6 +56,33 @@ const User = {
       throw error;
     }
   },
+   // Update User Information
+   async updateUser(id, name, email, password) {
+    const query = `
+      UPDATE Users
+      SET name = $1, email = $2, password = $3
+      WHERE id = $4
+      RETURNING *`;
+    const values = [name, email, password, id];
+    try {
+      const result = await pool.query(query, values);
+      return result.rows[0];  // Return the updated user data
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Remove User
+  async removeUser(id) {
+    const query = `DELETE FROM Users WHERE id = $1 RETURNING *`;
+    const values = [id];
+    try {
+      const result = await pool.query(query, values);
+      return result.rows[0];  // Return the removed user data
+    } catch (error) {
+      throw error;
+    }
+  }
 };
 
 module.exports = User;

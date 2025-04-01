@@ -3,14 +3,14 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel"); // ✅ Import the User model
 
 // 🔹 Controller function to create a user
-async function registerUser(req, res) {
+async function addUser(req, res) {
   try {
     console.log("📩 Received Request Body:", req.body); // Debugging line
 
     const { name, email, password } = req.body;
 
     // Check if user exists
-    const existingUser = await User.findUserByEmail(email);
+    const existingUser = await User.getUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -20,7 +20,7 @@ async function registerUser(req, res) {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create new user
-    const newUser = await User.registerUser(name, email, hashedPassword);
+    const newUser = await User.addUser(name, email, hashedPassword);
     console.log("✅ User Created Successfully:", newUser);
     res.status(201).json({ success: true, user: newUser });
   } catch (error) {
@@ -35,13 +35,13 @@ async function loginUser(req, res) {
     const { email, password } = req.body;
 
     // Find user by email
-    const user = await User.findUserByEmail(email);
+    const user = await User.getUserByEmail(email);
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
     // Compare passwords
-    const isMatch = await bcrypt.compare(password, user.password_hash);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
@@ -67,22 +67,19 @@ async function changePassword(req, res) {
     const userId = req.user.id;
 
     // Find user by ID
-    const user = await User.findUserById(userId);
+    const user = await User.getUserById(userId);
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
 
     // Confirm old password
-    const isMatch = await bcrypt.compare(oldPassword, user.password_hash);
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid Old Password" });
     }
 
     // Prevent reusing the same password
-    const isSamePassword = await bcrypt.compare(
-      newPassword,
-      user.password_hash
-    );
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
     if (isSamePassword) {
       return res.status(400).json({
         message: "New password must be different from the old password",
@@ -112,5 +109,62 @@ async function changePassword(req, res) {
   }
 }
 
+// Get user by ID
+async function getUserById(req, res) {
+  try {
+    const { id } = req.params;
+    const user = await User.getUserById(id);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    return res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+// Update user details
+async function updateUser(req, res) {
+  try {
+    const { id } = req.params;
+    const { name, email, password } = req.body;
+
+    // Hash the  password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const updatedUser = await User.updateUser(id, name, email, hashedPassword);
+    return res.status(200).json({ success: true, user: updatedUser });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+// Delete a user
+async function deleteUser(req, res) {
+  try {
+    const { id } = req.params;
+
+    const deletedUser = await User.removeUser(id);
+    return res.status(200).json({ success: true, user: deletedUser });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
 // ✅ Export the function so it can be used in routes
-module.exports = { registerUser, loginUser, changePassword };
+module.exports = {
+  addUser,
+  loginUser,
+  changePassword,
+  getUserById,
+  updateUser,
+  deleteUser,
+};

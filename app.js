@@ -1,7 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
-const pool = require("./config/db"); // Import pool
 
 dotenv.config();
 const app = express();
@@ -13,10 +12,10 @@ app.use(express.json()); // ✅ Add this line to parse JSON requests
 
 // Import Routes
 const userRoutes = require("./routes/userRoutes");
-//const taskRoutes = require("./routes/taskRoutes");
+const cartRoutes = require("./routes/cartRoutes");
 
 app.use("/user/", userRoutes); // ✅ Better route structure
-//app.use("/task/", taskRoutes); // ✅ Better route structure
+app.use("/cart/", cartRoutes); // ✅ Better route structure
   
 // // Start Server
 const PORT = process.env.PORT || 3000; // Default to port 5000

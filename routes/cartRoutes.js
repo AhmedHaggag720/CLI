@@ -4,7 +4,7 @@ const cartController = require("../controllers/cartController");
 const authenticateUser = require("../middlewares/authMiddleware");
 
 // Route to get a cart by user ID
-router.get("/:userId", cartController.getCartByUserId);
+router.get("/", authenticateUser , cartController.getCartByUserId);
 
 // Route to create a new cart
 router.post("/", authenticateUser, cartController.createCart);

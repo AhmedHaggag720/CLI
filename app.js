@@ -14,10 +14,12 @@ app.use(express.json()); // ✅ Add this line to parse JSON requests
 const userRoutes = require("./routes/userRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const ProductRoutes = require("./routes/productRoutes");
 
 app.use("/user/", userRoutes); // ✅ Better route structure
 app.use("/cart/", cartRoutes); // ✅ Better route structure
 app.use("/order/", orderRoutes); // ✅ Better route structure
+app.use("/product/", ProductRoutes); // ✅ Better route structure
   
 // // Start Server
 const PORT = process.env.PORT || 3000; // Default to port 5000

@@ -151,13 +151,26 @@ async function deleteUser(req, res) {
   try {
     const { id } = req.params;
 
+    // Await the user fetch from the database
+    const user = await User.getUserById(id);
+
+    // Check if user was found
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Proceed with deleting the user if found
     const deletedUser = await User.removeUser(id);
+
     return res.status(200).json({ success: true, user: deletedUser });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 }
+
 
 // ✅ Export the function so it can be used in routes
 module.exports = {

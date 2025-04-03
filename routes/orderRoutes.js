@@ -6,10 +6,12 @@ const authenticateUser = require("../middlewares/authMiddleware");
 router.get("/", authenticateUser, orderController.getOrdersByUserId);
 
 // Route to create a new order
-router.post("/", authenticateUser , orderController.createOrder);
+router.post("/", authenticateUser, orderController.createOrder);
 
 // Route to add items to the order
 //router.post("/add", orderController.addItemsToOrder);
+
+router.post("/checkout", authenticateUser, orderController.checkout);
 
 // Route to remove an item from the order
 // router.delete("/remove/:orderId/:productId",orderController.removeItemFromOrder

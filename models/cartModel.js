@@ -43,12 +43,12 @@ const Cart = {
   },
 
   // Add Item to Cart
-  async addItemToCart(cart_Id, product_Id, quantity) {
+  async addItemToCart(cart_Id, product_Id, quantity, price) {
     const query = `
-      INSERT INTO Cart_Items (cart_id, product_id, quantity)
-      VALUES ($1, $2, $3)
+      INSERT INTO Cart_Items (cart_id, product_id, quantity, price)
+      VALUES ($1, $2, $3, $4)
       RETURNING *`;
-    const values = [cart_Id, product_Id, quantity];
+    const values = [cart_Id, product_Id, quantity, price];
     try {
       const result = await pool.query(query, values);
       return result.rows[0]; // Return the newly added item
@@ -74,7 +74,7 @@ const Cart = {
   async deleteCart(cartId) {
     try {
       const query = "DELETE FROM carts WHERE id = $1";
-      const result = await pool.query(query, [cartId]);
+      const result = await db.query(query, [cartId]);
 
       return result.rowCount > 0; // Returns true if a row was deleted
     } catch (error) {
@@ -121,6 +121,17 @@ const Cart = {
       return result.rows[0]; // Return the updated item
     } catch (error) {
       throw error;
+    }
+  },
+  // Clear cart after checkout
+  async clearCart(userId) {
+    try {
+      const query =
+        "DELETE FROM cart_items WHERE cart_Id = (SELECT id FROM carts WHERE user_Id = $1)";
+      await pool.query(query, [userId]);
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      throw new Error("Database error");
     }
   },
 };

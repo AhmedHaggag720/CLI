@@ -46,7 +46,7 @@ async function createCart(req, res) {
 async function addItemToCart(req, res) {
   try {
     const userId = req.user.id; // Extract userId from JWT token
-    const { product_Id, quantity } = req.body;
+    const { product_Id, quantity, price} = req.body;
 
     // Check if the user already has a cart
     const cart = await Cart.getCartByUserId(userId);
@@ -76,7 +76,7 @@ async function addItemToCart(req, res) {
     }
 
     // If the item doesn't exist, add it to the cart
-    const addedItem = await Cart.addItemToCart(cartId, product_Id, quantity);
+    const addedItem = await Cart.addItemToCart(cartId, product_Id, quantity, price);
     return res.status(201).json({ success: true, item: addedItem });
   } catch (error) {
     console.error(error);

@@ -13,7 +13,7 @@ router.post("/", authenticateUser, cartController.createCart);
 router.post("/add", authenticateUser, cartController.addItemToCart);
 
 // Route to remove an item from the cart
-router.delete("/remove/:cartId/:productId",authenticateUser, cartController.removeItemFromCart);
+router.delete("/remove/:productId",authenticateUser, cartController.removeItemFromCart);
 
 // Route to delete Cart
 router.delete("/:cartId/",authenticateUser, cartController.deleteCart);
